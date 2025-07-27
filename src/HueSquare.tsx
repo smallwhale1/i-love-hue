@@ -1,10 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  GRID_HEIGHT,
-  GRID_WIDTH,
-  SQUARE_HEIGHT,
-  SQUARE_WIDTH,
-} from "./constants";
 import { rowColToIdx } from "./utils";
 
 export interface HueSquareData {

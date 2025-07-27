@@ -32,7 +32,7 @@ export const genGridColors = (
   // gen left side
   const tlToBl = colorInterpolate(height, topLeft, bottomLeft);
   const tRToBr = colorInterpolate(height, topRight, bottomRight);
-  return Array.from({ length: height }, (val, index) =>
+  return Array.from({ length: height }, (_, index) =>
     colorInterpolate(width, tlToBl[index], tRToBr[index])
   );
 };
