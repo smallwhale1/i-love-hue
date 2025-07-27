@@ -18,9 +18,20 @@ export interface HueSquareData {
 type HueSquareProps = {
   squareData: HueSquareData;
   onSwap: (idA: number, idB: number) => void;
+  squareWidth: number;
+  squareHeight: number;
+  gridWidth: number;
+  gridHeight: number;
 };
 
-export const HueSquare = ({ squareData, onSwap }: HueSquareProps) => {
+export const HueSquare = ({
+  squareData,
+  onSwap,
+  squareHeight,
+  squareWidth,
+  gridWidth,
+  gridHeight,
+}: HueSquareProps) => {
   const ref = useRef<null | HTMLDivElement>(null);
   const [xOffset, setXOffset] = useState(0);
   const [yOffset, setYOffset] = useState(0);
@@ -30,7 +41,7 @@ export const HueSquare = ({ squareData, onSwap }: HueSquareProps) => {
 
   useEffect(() => {
     const delay =
-      50 + (squareData.currRow * GRID_WIDTH + squareData.currCol) * 50;
+      50 + (squareData.currRow * gridWidth + squareData.currCol) * 50;
     const timeout = setTimeout(() => {
       setScale(1);
     }, delay);
@@ -59,14 +70,14 @@ export const HueSquare = ({ squareData, onSwap }: HueSquareProps) => {
       let offsetX = e.clientX - rect.left;
       let offsetY = e.clientY - rect.top;
 
-      const swapRow = Math.floor(offsetY / SQUARE_HEIGHT);
-      const swapCol = Math.floor(offsetX / SQUARE_WIDTH);
+      const swapRow = Math.floor(offsetY / squareHeight);
+      const swapCol = Math.floor(offsetX / squareWidth);
 
       const isValid =
         swapRow >= 0 &&
-        swapRow < GRID_HEIGHT &&
+        swapRow < gridHeight &&
         swapCol >= 0 &&
-        swapCol < GRID_WIDTH;
+        swapCol < gridWidth;
 
       if (isValid) {
         onSwap(
@@ -113,8 +124,8 @@ export const HueSquare = ({ squareData, onSwap }: HueSquareProps) => {
       className="translate-wrapper"
       style={{
         transform: `translate(${
-          squareData.currCol * SQUARE_WIDTH + xOffset
-        }px, ${squareData.currRow * SQUARE_HEIGHT + yOffset}px)`,
+          squareData.currCol * squareWidth + xOffset
+        }px, ${squareData.currRow * squareHeight + yOffset}px)`,
       }}
     >
       <div
@@ -122,8 +133,8 @@ export const HueSquare = ({ squareData, onSwap }: HueSquareProps) => {
         style={{
           transform: `scale(${scale})`,
           backgroundColor: squareData.color,
-          width: SQUARE_WIDTH,
-          height: SQUARE_HEIGHT,
+          width: squareWidth,
+          height: squareHeight,
         }}
       ></div>
     </div>

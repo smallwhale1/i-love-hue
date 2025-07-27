@@ -3,6 +3,11 @@
   padding: 0;
 }
 
+html,
+body {
+  touch-action: none;
+}
+
 body {
   background-color: #efe1cb;
 }
@@ -37,6 +42,25 @@ body {
   will-change: transform;
   transition: transform 0.5s ease;
   cursor: pointer;
+  touch-action: none;
+}
+
+.heart-icon {
+  width: 50%;
+  height: 50%;
+  filter: drop-shadow(0 0 4px white) drop-shadow(0 0 4px white);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  transition-delay: 0.5s;
+}
+
+.heart-icon.visible {
+  opacity: 1;
 }
 
 .logo {
