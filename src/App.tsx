@@ -2,14 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import "./App.css";
 import { genGridColors, idxToRowCol, rowColToIdx } from "./utils";
 import { HueSquare, type HueSquareData } from "./HueSquare";
-// import {
-//   GRID_HEIGHT,
-//   GRID_WIDTH,
-//   SQUARE_HEIGHT,
-//   SQUARE_WIDTH,
-// } from "./constants";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
 import HeartIcon from "./Heart";
 
 interface Swap {
@@ -30,37 +22,6 @@ const swapsVertical: Swap[] = [
   { row1: 4, col1: 1, row2: 2, col2: 3 },
   { row1: 5, col1: 1, row2: 1, col2: 3 },
 ];
-
-// const swaps: Swap[] = [
-// { row1: 1, col1: 1, row2: 3, col2: 9 },
-// { row1: 1, col1: 2, row2: 2, col2: 9 },
-// { row1: 2, col1: 2, row2: 1, col2: 9 },
-// { row1: 3, col1: 2, row2: 1, col2: 7 },
-// { row1: 1, col1: 3, row2: 2, col2: 8 },
-// { row1: 1, col1: 5, row2: 2, col2: 7 },
-// ];
-
-const pallette1 = ["#ee7d6e", "#387ed9", "#d4dd56", "#22e2ff"];
-const pallette2 = ["#f05f5f", "#853aee", "#d4dd56", "#2fe8de"];
-
-// const swapSquarePositions = (
-//   squares: HueSquareData[],
-//   { row1, row2, col1, col2 }: Swap
-// ) => {
-//   const idx1 = GRID_WIDTH * row1 + col1;
-//   const idx2 = GRID_WIDTH * row2 + col2;
-
-//   // TODO: need to get square at curr col curr row
-//   squares[idx1].currCol = col2;
-//   squares[idx1].currRow = row2;
-//   squares[idx1].fixed = false;
-
-//   squares[idx2].currCol = col1;
-//   squares[idx2].currRow = row1;
-//   squares[idx1].fixed = false;
-
-//   return squares;
-// };
 
 const swapSquarePositions = (
   squares: HueSquareData[],
