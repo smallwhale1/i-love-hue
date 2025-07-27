@@ -11,37 +11,109 @@ import {
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(useGSAP); // register the hook to avoid React version discrepancies
+interface Swap {
+  row1: number;
+  col1: number;
+  row2: number;
+  col2: number;
+}
+const swaps: Swap[] = [
+  { row1: 1, col1: 1, row2: 5, col2: 3 },
+  { row1: 2, col1: 1, row2: 4, col2: 3 },
+  { row1: 3, col1: 1, row2: 3, col2: 3 },
+  { row1: 4, col1: 1, row2: 2, col2: 3 },
+  { row1: 5, col1: 1, row2: 1, col2: 3 },
+];
+
+const pallette1 = ["#ee7d6e", "#387ed9", "#d4dd56", "#22e2ff"];
+const pallette2 = ["#f05f5f", "#853aee", "#d4dd56", "#2fe8de"];
+const initSquares: HueSquareData[] = genGridColors(
+  GRID_WIDTH,
+  GRID_HEIGHT,
+  "#f15780",
+  "#424ae8",
+  "#dce64b",
+  "#3ae9c9"
+)
+  .map((hueRow, row) =>
+    hueRow.map((squareColor, col) => ({
+      color: squareColor,
+      id: row * GRID_WIDTH + col,
+      currRow: row,
+      currCol: col,
+      fixed: true,
+    }))
+  )
+  .flat();
+
+// const swapSquarePositions = (
+//   squares: HueSquareData[],
+//   { row1, row2, col1, col2 }: Swap
+// ) => {
+//   const idx1 = GRID_WIDTH * row1 + col1;
+//   const idx2 = GRID_WIDTH * row2 + col2;
+
+//   // TODO: need to get square at curr col curr row
+//   squares[idx1].currCol = col2;
+//   squares[idx1].currRow = row2;
+//   squares[idx1].fixed = false;
+
+//   squares[idx2].currCol = col1;
+//   squares[idx2].currRow = row1;
+//   squares[idx1].fixed = false;
+
+//   return squares;
+// };
+
+const swapSquarePositions = (
+  squares: HueSquareData[],
+  { row1, row2, col1, col2 }: Swap
+) => {
+  // TODO: need to get square at curr col curr row
+  const target1 = squares.filter(
+    (square) => square.currRow == row1 && square.currCol == col1
+  )[0];
+
+  const target2 = squares.filter(
+    (square) => square.currRow == row2 && square.currCol == col2
+  )[0];
+
+  target1.currCol = col2;
+  target1.currRow = row2;
+  target1.fixed = false;
+
+  target2.currCol = col1;
+  target2.currRow = row1;
+  target2.fixed = false;
+
+  return squares;
+};
+
+const checkSolved = (squares: HueSquareData[]) => {
+  for (const square of squares) {
+    const currSquareIdx = square.currRow * GRID_WIDTH + square.currCol;
+    if (currSquareIdx !== square.id) {
+      console.log("wrong id:", square.id);
+      return false;
+    }
+  }
+  return true;
+};
+
+const genInitial = (init: HueSquareData[]) => {
+  let curr = init;
+  for (const swap of swaps) {
+    curr = swapSquarePositions(curr, swap);
+  }
+  return curr;
+};
+
+const initPuzzle = genInitial(initSquares);
 
 function App() {
   const container = useRef<HTMLDivElement>(null);
-  const [squares, setSquares] = useState<HueSquareData[]>(
-    genGridColors(
-      GRID_WIDTH,
-      GRID_HEIGHT,
-      "#ee7d6e",
-      "#387ed9",
-      "#d4dd56",
-      "#22e2ff"
-    )
-      .map((hueRow, row) =>
-        hueRow.map((squareColor, col) => ({
-          color: squareColor,
-          id: row * GRID_WIDTH + col,
-          currRow: row,
-          currCol: col,
-        }))
-      )
-      .flat()
-  );
-
-  const { contextSafe } = useGSAP(
-    () => {
-      // gsap code here...
-      // gsap.to("#square-0", { x: 100 }); // <-- automatically reverted
-    },
-    { scope: container }
-  ); // <-- scope is for selector text (optional)
+  // TODO: move this call out of component
+  const [squares, setSquares] = useState<HueSquareData[]>(initPuzzle);
 
   const swapSquares = (idxA: number, idxB: number) => {
     setSquares((squares) => {
@@ -59,6 +131,16 @@ function App() {
       return newSquares;
     });
   };
+
+  // check puzzle solved
+  useEffect(() => {
+    const solved = checkSolved(squares);
+    if (solved) {
+      console.log("Solved!");
+    } else {
+      console.log("Not solved :(");
+    }
+  }, [squares]);
 
   return (
     <div ref={container} className="game">

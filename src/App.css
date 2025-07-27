@@ -4,7 +4,7 @@
 }
 
 body {
-  background-color: #ebe1d2;
+  background-color: #efe1cb;
 }
 
 .game {
@@ -19,12 +19,24 @@ body {
   display: flex;
   flex-direction: column;
 }
-
+/* 
 .hue-square {
   position: absolute;
   cursor: pointer;
   will-change: transform;
   transition: transform 0.5s ease;
+} */
+
+.translate-wrapper {
+  position: absolute;
+  will-change: transform;
+  transition: transform 0.5s ease;
+}
+
+.hue-square {
+  will-change: transform;
+  transition: transform 0.5s ease;
+  cursor: pointer;
 }
 
 .logo {
