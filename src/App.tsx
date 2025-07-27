@@ -3,6 +3,7 @@ import "./App.css";
 import { genGridColors, idxToRowCol, rowColToIdx } from "./utils";
 import { HueSquare, type HueSquareData } from "./HueSquare";
 import HeartIcon from "./Heart";
+import { GRID_HEIGHT, GRID_WIDTH } from "./constants";
 
 interface Swap {
   row1: number;
@@ -10,18 +11,47 @@ interface Swap {
   row2: number;
   col2: number;
 }
+
 const swaps: Swap[] = [
   { row1: 1, col1: 1, row2: 3, col2: 5 },
   { row1: 2, col1: 1, row2: 2, col2: 5 },
   { row1: 3, col1: 1, row2: 1, col2: 5 },
 ];
-const swapsVertical: Swap[] = [
-  { row1: 1, col1: 1, row2: 5, col2: 3 },
-  { row1: 2, col1: 1, row2: 4, col2: 3 },
-  { row1: 3, col1: 1, row2: 3, col2: 3 },
-  { row1: 4, col1: 1, row2: 2, col2: 3 },
-  { row1: 5, col1: 1, row2: 1, col2: 3 },
-];
+
+function generateSwaps(
+  n: number,
+  minRow: number,
+  minCol: number,
+  maxRow: number,
+  maxCol: number
+): Swap[] {
+  const swaps: Swap[] = [];
+
+  for (let i = 0; i < n; i++) {
+    const row1 = randInt(minRow, maxRow);
+    const col1 = randInt(minCol, maxCol);
+
+    let row2 = randInt(minRow, maxRow);
+    let col2 = randInt(minCol, maxCol);
+
+    // ensure swap target isn't same as source
+    while (row1 === row2 && col1 === col2) {
+      row2 = randInt(minRow, maxRow);
+      col2 = randInt(minCol, maxCol);
+    }
+
+    swaps.push({ row1, col1, row2, col2 });
+  }
+
+  return swaps;
+}
+
+function randInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const swaps1 = generateSwaps(5, 1, 1, 3, 5);
+console.log(swaps1);
 
 const swapSquarePositions = (
   squares: HueSquareData[],
@@ -73,33 +103,20 @@ function App() {
   const [squareWidth, setSquareWidth] = useState(window.innerWidth / 7);
   const [squareHeight, setSquareHeight] = useState(window.innerHeight / 5);
   const [solved, setSolved] = useState(false);
-  const [gridWidth, setGridWidth] = useState(7);
-  const [gridHeight, setGridHeight] = useState(5);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const result = checkSolved(squares, gridWidth);
+    const result = checkSolved(squares, GRID_WIDTH);
     setSolved(result);
-  }, [squares, gridWidth]);
+  }, [squares]);
 
   useEffect(() => {
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    let newWidth = 7;
-    let newHeight = 5;
-
-    if (windowWidth < windowHeight) {
-      newWidth = 5;
-      newHeight = 7;
-      setGridWidth(5);
-      setGridHeight(7);
-    }
-
-    setSquareWidth(window.innerWidth / newWidth);
-    setSquareHeight(window.innerHeight / newHeight);
+    setSquareWidth(window.innerWidth / GRID_WIDTH);
+    setSquareHeight(window.innerHeight / GRID_HEIGHT);
 
     const initSquares: HueSquareData[] = genGridColors(
-      newWidth,
-      newHeight,
+      GRID_WIDTH,
+      GRID_HEIGHT,
       "#f15780",
       "#424ae8",
       "#dce64b",
@@ -108,7 +125,7 @@ function App() {
       .map((hueRow, row) =>
         hueRow.map((squareColor, col) => ({
           color: squareColor,
-          id: row * newWidth + col,
+          id: row * GRID_WIDTH + col,
           currRow: row,
           currCol: col,
           fixed: true,
@@ -116,14 +133,12 @@ function App() {
       )
       .flat();
 
-    let initPuzzle = [];
-    if (windowWidth < windowHeight) {
-      initPuzzle = genInitial(initSquares, swapsVertical);
-    } else {
-      initPuzzle = genInitial(initSquares, swaps);
-    }
+    const swaps1 = generateSwaps(50, 1, 1, GRID_WIDTH - 2, GRID_HEIGHT - 2);
+    console.log(swaps1);
+    const initPuzzle = genInitial(initSquares, swaps1);
 
     setSquares(initPuzzle);
+    setLoaded(true);
   }, []);
 
   const swapSquares = (idxA: number, idxB: number) => {
@@ -143,23 +158,23 @@ function App() {
     });
   };
 
-  // check puzzle solved
-  useEffect(() => {
-    const solved = checkSolved(squares, gridWidth);
-    if (solved) {
-      console.log("Solved!");
-    } else {
-      console.log("Not solved :(");
-    }
-  }, [squares]);
+  // // check puzzle solved
+  // useEffect(() => {
+  //   const solved = checkSolved(squares, GRID_WIDTH);
+  //   if (solved) {
+  //     console.log("Solved!");
+  //   } else {
+  //     console.log("Not solved :(");
+  //   }
+  // }, [squares]);
 
   return (
     <div ref={container} className="game">
       <div
         className="grid"
         style={{
-          width: gridWidth * squareWidth,
-          height: gridHeight * squareHeight,
+          width: GRID_WIDTH * squareWidth,
+          height: GRID_HEIGHT * squareHeight,
         }}
       >
         {squares.map((square) => (
@@ -169,12 +184,14 @@ function App() {
             onSwap={swapSquares}
             key={square.id}
             squareData={square}
-            gridWidth={gridWidth}
-            gridHeight={gridHeight}
+            gridWidth={GRID_WIDTH}
+            gridHeight={GRID_HEIGHT}
           />
         ))}
       </div>
-      <HeartIcon className={solved ? "heart-icon visible" : "heart-icon"} />
+      <HeartIcon
+        className={solved && loaded ? "heart-icon visible" : "heart-icon"}
+      />
     </div>
   );
 }

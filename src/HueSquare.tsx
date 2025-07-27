@@ -34,8 +34,7 @@ export const HueSquare = ({
   const pointerDownRef = useRef(false);
 
   useEffect(() => {
-    const delay =
-      50 + (squareData.currRow * gridWidth + squareData.currCol) * 50;
+    const delay = 5 + (squareData.currRow * gridWidth + squareData.currCol) * 5;
     const timeout = setTimeout(() => {
       setScale(1);
     }, delay);
