@@ -12,11 +12,11 @@ interface Swap {
   col2: number;
 }
 
-const swaps: Swap[] = [
-  { row1: 1, col1: 1, row2: 3, col2: 5 },
-  { row1: 2, col1: 1, row2: 2, col2: 5 },
-  { row1: 3, col1: 1, row2: 1, col2: 5 },
-];
+// const swaps: Swap[] = [
+//   { row1: 1, col1: 1, row2: 3, col2: 5 },
+//   { row1: 2, col1: 1, row2: 2, col2: 5 },
+//   { row1: 3, col1: 1, row2: 1, col2: 5 },
+// ];
 
 function generateSwaps(
   n: number,
